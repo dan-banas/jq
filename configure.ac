@@ -1,4 +1,8 @@
-m4_define([jq_version], m4_esyscmd_s([git describe --tags --dirty --match 'jq-*'|sed 's/^jq-//']))
+m4_define([m4_chomp_all], 
+[m4_format([[%.*s]], m4_bregexp(m4_translit([[$1]], [/], [/ ]), [/*$]), [$1])])   
+ 
+m4_define([m4_esyscmd_s], [m4_chomp_all(m4_esyscmd([$1]))])     
+m4_define([jq_version], [m4_esyscmd_s([git describe --tags --dirty --match 'jq-*'|sed 's/^jq-//'])])
 
 AC_INIT([jq], [jq_version], [https://github.com/stedolan/jq/issues],
              [jq], [https://stedolan.github.io/jq])
@@ -7,19 +11,28 @@ m4_include([m4/ax_compare_version.m4])
 m4_include([m4/ax_prog_bison_version.m4])
 
 dnl Created autoconf implementation thompson@dtosolutions, 26NOV12
-AC_PREREQ([2.64])
+AC_PREREQ([2.59])
 AC_CONFIG_AUX_DIR([config])
-AM_INIT_AUTOMAKE([1.11.2 subdir-objects parallel-tests foreign -Wall])
-AM_SILENT_RULES([yes])
-AM_PROG_AR
+AM_INIT_AUTOMAKE([1.9.6 subdir-objects foreign -Wall])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+#AM_PROG_AR
+m4_ifndef([AC_PROG_SED],
+	AC_DEFUN([AC_PROG_SED],[AC_CHECK_PROG(SED,sed,sed)])
+	)
+m4_ifndef([AC_PROG_GREP],
+	AC_DEFUN([AC_PROG_GREP],[AC_CHECK_PROG(GREP,grep,grep)])
+	)
+AC_DEFUN([AC_PROG_LEX],[AC_CHECK_PROG(LEX,flex,flex)])
 AM_MAINTAINER_MODE([enable])
 AC_PROG_CC
 AC_PROG_CC_STDC
+CFLAGS+=" -std=c99"
 AC_PROG_CPP_WERROR
 AC_PROG_YACC
+AC_PROG_LIBTOOL
 AC_OBJEXT
 AC_EXEEXT
-LT_INIT([shared static win32-dll])
+LT_INIT
 AM_PROG_CC_C_O
 
 
